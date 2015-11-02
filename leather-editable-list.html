@@ -56,7 +56,7 @@
       <div class="toolbar">
         <div class="title">{{heading}}</div>
 
-        <template is="dom-if" if="{{default}}">
+        <template is="dom-if" if="{{!_isUndefined(default)}}">
           <paper-icon-button icon="add" on-tap="addDefault" data-visible$="[[!_anyChecked(selectedItems.splices)]]">+</paper-icon-button>
         </template>
         <paper-icon-button icon="delete" on-tap="deleteSelected" data-visible$="[[_anyChecked(selectedItems.splices)]]"></paper-icon-button>
@@ -105,7 +105,7 @@
           bind whatever value it exposes to this property.
         */
         newValue: {
-
+          type: Object
         },
         /*
          this is a hack as _isChecked(item, items.splices) doesn't work
@@ -113,7 +113,8 @@
         _recheckChecked: {
           type: Number,
           computed: '_getRecheckChecked(items.splices)'
-        }
+        },
+        _debugPath: Array
       },
 
       behaviors: [
@@ -121,6 +122,7 @@
       ],
 
       observers: [
+        '_notifyPathOnInstances(items.*)'
       ],
 
       ready: function() {
@@ -130,6 +132,14 @@
         this.templatize(template);
 
         this.set('selectedItems', []);
+
+        if(this.newValue){
+          this._initialNewValue = JSON.parse(JSON.stringify(this.newValue));
+        }
+        var addRow = Polymer.dom(this).querySelector('[add-row]');
+        if(addRow && typeof addRow.value !== 'undefined'){
+          this._initialAddRowValue = addRow.value;
+        }
       },
 
       attached: function() {
@@ -141,6 +151,7 @@
       },
 
       _restructureItems: function(){
+
         var items = Polymer.dom(this.root).querySelectorAll('.row .item');
         var item;
         for(var i=0; i<items.length; i++){
@@ -150,8 +161,17 @@
             var instance = this.stamp({value: item.dataItem});
             instance.i = i;
             item.appendChild(instance.root);
+            item.instance = instance;
           }
         }
+
+      },
+
+      _notifyPathOnInstances: function(change){
+        var path = change.path.split('.');
+        console.group('Observer triggered on items.*, the path is', path);
+        console.info(change);
+        console.groupEnd();
       },
 
       _isChecked: function(item, id){
@@ -170,8 +190,10 @@
         var addRow = Polymer.dom(this).querySelector("[add-row]");
         if(addRow.value){
           this.push('items', JSON.parse(JSON.stringify(addRow.value)));
+          addRow.value = JSON.parse(JSON.stringify(this._initialAddRowValue));
         }else{
-          this.push('items', JSON.parse(JSON.stringify(this.newValue)))
+          this.push('items', JSON.parse(JSON.stringify(this.newValue)));
+          this.newValue = JSON.parse(JSON.stringify(this._initialNewValue))
         }
       },
 
@@ -199,14 +221,14 @@
         var item = path.shift();
         var forwardPath = ['items', '#'+templateInstance.i].join('.');
         this.set(forwardPath, value);
-        console.info('_forwardInstanceProp',arguments, templateInstance.i);
+        //console.info('_forwardInstanceProp',arguments, templateInstance.i);
       },
       _forwardInstancePath: function(templateInstance, prop, value){
         var path = prop.split('.');
         var item = path.shift();
         var forwardPath = ['items', '#'+templateInstance.i].concat(path).join('.');
         this.set(forwardPath, value);
-        console.info('_forwardInstancePath',arguments, templateInstance.i);
+        //console.info('_forwardInstancePath',arguments, templateInstance.i);
       },
 
       _getRecheckChecked: function(){
@@ -219,6 +241,10 @@
 
       _showAddRowInterface: function(){
         return Polymer.dom(this).querySelector("[add-row]") ? true : false;
+      },
+
+      _isUndefined: function(obj){
+        return typeof obj === 'undefined';
       }
     });
   </script>

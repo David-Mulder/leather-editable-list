@@ -27,39 +27,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <template is="dom-bind" id="app">
 
       <div style="display:flex">
+
         <leather-editable-list default="" items="{{someArray}}">
           <template>
             <paper-input value="{{value}}" type="number" no-label-float></paper-input>
           </template>
         </leather-editable-list>
 
-        <leather-editable-list items="{{someArray}}" heading="Optional heading">
-          <template>
-           <span>{{value}}</span>
-          </template>
-          <paper-input add-row no-label-float></paper-input>
-        </leather-editable-list>
-
-        <leather-editable-list default='{"a": "", "b": ""}' items="{{someComplexArray}}">
-          <template>
-            <div style="display: flex">
-              <paper-input value="{{value.a}}" no-label-float></paper-input>
-              <paper-input value="{{value.b}}" no-label-float></paper-input>
-            </div>
-          </template>
-        </leather-editable-list>
       </div>
+
+      <ol>
+        <li><button on-tap="unshiftFunc">app.unshift('someArray', 0);</button></li>
+        <li>Change the 0 in the list above into anything else, note the console</li>
+        <li>Change the 1 in the list above into anything else, note the console</li>
+      </ol>
 
     </template>
 
     <script>
       var app = document.querySelector('#app');
       app.someArray = [1,2,3,4,5]
-      app.someComplexArray = [
-        { a: 1, b: 2 },
-        { a: 3, b: 5 },
-        { a: 6, b: 7 }
-      ]
+      app.unshiftFunc = function(){
+        app.unshift('someArray', 0);
+      }
     </script>
   </body>
 </html>
