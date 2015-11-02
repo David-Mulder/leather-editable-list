@@ -1,0 +1,225 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../iron-icons/iron-icons.html">
+<link rel="import" href="../paper-toolbar/paper-toolbar.html">
+
+<!--
+
+
+@group Leather Elements
+@element leather-editable-list
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<dom-module id="leather-editable-list">
+  <template>
+    <style>
+      :host {
+        display: block;
+        box-sizing: border-box;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        padding:5px;
+      }
+      .row .item{
+        flex: 1;
+        margin-right:11px;
+      }
+      .toolbar{
+        display: flex;
+        align-items: center;
+        background-color: var(--dark-primary-color);
+        color: var(--text-primary-color);
+        padding: 5px;
+        min-height: 40px;
+      }
+      .toolbar .title{
+        flex: 1;
+        padding-left: 10px;
+        font-family: Roboto;
+      }
+      .toolbar .icon{
+      }
+      .toolbar paper-icon-button{
+        display: none;
+      }
+      .toolbar paper-icon-button[data-visible]{
+        display: block;
+      }
+    </style>
+
+    <div>
+      <div class="toolbar">
+        <div class="title">{{heading}}</div>
+
+        <template is="dom-if" if="{{default}}">
+          <paper-icon-button icon="add" on-tap="addDefault" data-visible$="[[!_anyChecked(selectedItems.splices)]]">+</paper-icon-button>
+        </template>
+        <paper-icon-button icon="delete" on-tap="deleteSelected" data-visible$="[[_anyChecked(selectedItems.splices)]]"></paper-icon-button>
+      </div>
+      <template is="dom-repeat" items="{{items}}" on-dom-change="_restructureItems" index-as="rowNumber">
+        <div class="row">
+          <div class="item" data-item="[[item]]" data-empty></div>
+          <div class="icon">
+            <paper-checkbox checked="[[_isChecked(item, rowNumber, _recheckChecked)]]" on-change="_setSelection"></paper-checkbox>
+          </div>
+        </div>
+      </template>
+      <template is="dom-if" if="{{_showAddRowInterface()}}">
+        <div class="row">
+          <div class="item">
+            <content select="[add-row]"></content>
+          </div>
+          <div class="icon">
+            <paper-icon-button icon="add" on-tap="add" data-visible$="[[!_anyChecked(selectedItems.splices)]]">+</paper-icon-button>
+          </div>
+        </div>
+      </template>
+
+    </div>
+  </template>
+
+  <script>
+    Polymer({
+      is: 'leather-editable-list',
+
+      properties: {
+        items: Array,
+        selectedItems: Array,
+        default: {
+          type: Object
+        },
+        /*
+
+        */
+        heading: {
+          type: String,
+          value: ''
+        },
+        /*
+          if `[add-row]` exposes a `value` property itself (e.g. because it's paper-input) then that will be used, otherwise you should
+          bind whatever value it exposes to this property.
+        */
+        newValue: {
+
+        },
+        /*
+         this is a hack as _isChecked(item, items.splices) doesn't work
+         */
+        _recheckChecked: {
+          type: Number,
+          computed: '_getRecheckChecked(items.splices)'
+        }
+      },
+
+      behaviors: [
+        Polymer.Templatizer
+      ],
+
+      observers: [
+      ],
+
+      ready: function() {
+        var template = Polymer.dom(this).querySelector('template');
+        this._instanceProps = {};
+        this._instanceProps.value = true;
+        this.templatize(template);
+
+        this.set('selectedItems', []);
+      },
+
+      attached: function() {
+
+      },
+
+      detached: function() {
+
+      },
+
+      _restructureItems: function(){
+        var items = Polymer.dom(this.root).querySelectorAll('.row .item');
+        var item;
+        for(var i=0; i<items.length; i++){
+          item = items[i];
+          if(item.hasAttribute('data-empty')){
+            item.removeAttribute('data-empty');
+            var instance = this.stamp({value: item.dataItem});
+            instance.i = i;
+            item.appendChild(instance.root);
+          }
+        }
+      },
+
+      _isChecked: function(item, id){
+        return this.selectedItems.indexOf(id) > -1;
+      },
+
+      deleteSelected: function(){
+        this.selectedItems.sort();
+        for(var i=this.selectedItems.length-1;i>=0;i--){
+          this.splice('items', this.selectedItems[i], 1);
+          this.splice('selectedItems', i, 1);
+        }
+      },
+
+      add: function(){
+        var addRow = Polymer.dom(this).querySelector("[add-row]");
+        if(addRow.value){
+          this.push('items', JSON.parse(JSON.stringify(addRow.value)));
+        }else{
+          this.push('items', JSON.parse(JSON.stringify(this.newValue)))
+        }
+      },
+
+      addDefault: function(){
+        this.push('items', JSON.parse(JSON.stringify(this.default)));
+      },
+
+      _setSelection: function(ev){
+        var id = ev.model.rowNumber;
+        if(ev.target.checked){
+          this.push('selectedItems', id);
+        }else{
+          this.splice('selectedItems', this.selectedItems.indexOf(id), 1);
+        }
+      },
+
+      _forwardParentProp: function(prop, value){
+        console.warn('_forwardParentProp',arguments);
+      },
+      _forwardParentPath: function(prop, value){
+        console.warn('_forwardParentPath',arguments);
+      },
+      _forwardInstanceProp: function(templateInstance, prop, value){
+        var path = prop.split('.');
+        var item = path.shift();
+        var forwardPath = ['items', '#'+templateInstance.i].join('.');
+        this.set(forwardPath, value);
+        console.info('_forwardInstanceProp',arguments, templateInstance.i);
+      },
+      _forwardInstancePath: function(templateInstance, prop, value){
+        var path = prop.split('.');
+        var item = path.shift();
+        var forwardPath = ['items', '#'+templateInstance.i].concat(path).join('.');
+        this.set(forwardPath, value);
+        console.info('_forwardInstancePath',arguments, templateInstance.i);
+      },
+
+      _getRecheckChecked: function(){
+        return Symbol();
+      },
+
+      _anyChecked: function(){
+        return this.selectedItems.length > 0;
+      },
+
+      _showAddRowInterface: function(){
+        return Polymer.dom(this).querySelector("[add-row]") ? true : false;
+      }
+    });
+  </script>
+</dom-module>
