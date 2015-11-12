@@ -170,7 +170,8 @@
       _notifyPathOnInstances: function(change){
         var path = change.path.split('.');
         console.group('Observer triggered on items.*, the path is', path);
-        console.info(change);
+        console.info('change:', change);
+        console.info('items:', this.items);
         console.groupEnd();
       },
 
