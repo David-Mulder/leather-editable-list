@@ -113,8 +113,7 @@
         _recheckChecked: {
           type: Number,
           computed: '_getRecheckChecked(items.splices)'
-        },
-        _debugPath: Array
+        }
       },
 
       behaviors: [
@@ -159,7 +158,8 @@
           if(item.hasAttribute('data-empty')){
             item.removeAttribute('data-empty');
             var instance = this.stamp({value: item.dataItem});
-            instance.i = i;
+            instance.collectionKey = Polymer.Collection.get(this.items).getKey(item.dataItem);
+            item.setAttribute('data-collection-key', instance.collectionKey);
             item.appendChild(instance.root);
             item.instance = instance;
           }
@@ -169,10 +169,11 @@
 
       _notifyPathOnInstances: function(change){
         var path = change.path.split('.');
-        console.group('Observer triggered on items.*, the path is', path);
-        console.info('change:', change);
-        console.info('items:', this.items);
-        console.groupEnd();
+        if(path.length >= 2 && path[1].substr(0,1) == '#'){
+          var value = this.get('items.'+path[1]);
+          var instance = Polymer.dom(this.root).querySelector('.row .item[data-collection-key="'+path[1]+'"]').instance;
+          instance.set('value', value);
+        }
       },
 
       _isChecked: function(item, id){
@@ -220,14 +221,14 @@
       _forwardInstanceProp: function(templateInstance, prop, value){
         var path = prop.split('.');
         var item = path.shift();
-        var forwardPath = ['items', '#'+templateInstance.i].join('.');
+        var forwardPath = ['items', templateInstance.collectionKey].join('.');
         this.set(forwardPath, value);
         //console.info('_forwardInstanceProp',arguments, templateInstance.i);
       },
       _forwardInstancePath: function(templateInstance, prop, value){
         var path = prop.split('.');
         var item = path.shift();
-        var forwardPath = ['items', '#'+templateInstance.i].concat(path).join('.');
+        var forwardPath = ['items', templateInstance.collectionKey].concat(path).join('.');
         this.set(forwardPath, value);
         //console.info('_forwardInstancePath',arguments, templateInstance.i);
       },
