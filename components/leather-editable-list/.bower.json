@@ -25,14 +25,14 @@
     "web-component-tester": "*",
     "paper-input": "PolymerElements/paper-input#~1.0.18"
   },
-  "_release": "689339af0e",
+  "_release": "7b38196820",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "689339af0e5cb1b27a3985c9de756fcda7351bc2"
+    "commit": "7b38196820bca63761eac5af7c8cb6b53eb788a8"
   },
   "_source": "git://github.com/David-Mulder/leather-editable-list.git",
   "_target": "master",
-  "_originalSource": "David-Mulder/leather-editable-list",
+  "_originalSource": "leather-editable-list",
   "_direct": true
 }
