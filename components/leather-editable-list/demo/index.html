@@ -1,0 +1,65 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>leather-editable-list Demo</title>
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../leather-editable-list.html">
+    <link rel="import" href="../../paper-input/paper-input.html">
+    <style>
+      leather-editable-list{
+        flex: 1;
+        margin: 30px;
+      }
+    </style>
+  </head>
+  <body unresolved>
+    <template is="dom-bind" id="app">
+
+      <div style="display:flex">
+        <leather-editable-list default="" items="{{someArray}}">
+          <template>
+            <paper-input value="{{value}}" type="number" no-label-float></paper-input>
+          </template>
+        </leather-editable-list>
+
+        <leather-editable-list items="{{someArray}}" heading="Optional heading">
+          <template>
+           <span>{{value}}</span>
+          </template>
+          <paper-input add-row no-label-float></paper-input>
+        </leather-editable-list>
+
+        <leather-editable-list default='{"a": "", "b": ""}' items="{{someComplexArray}}">
+          <template>
+            <div style="display: flex">
+              <paper-input value="{{value.a}}" no-label-float></paper-input>
+              <paper-input value="{{value.b}}" no-label-float></paper-input>
+            </div>
+          </template>
+        </leather-editable-list>
+      </div>
+
+    </template>
+
+    <script>
+      var app = document.querySelector('#app');
+      app.someArray = [1,2,3,4,5]
+      app.someComplexArray = [
+        { a: 1, b: 2 },
+        { a: 3, b: 5 },
+        { a: 6, b: 7 }
+      ]
+    </script>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+{
+  "name": "leather-editable-list",
+  "authors": [
+    "Anonymous <anonymous@example.com>"
+  ],
+  "description": ".",
+  "keywords": [
+    "web-component",
+    "polymer"
+  ],
+  "main": "leather-editable-list.html",
+  "license": "http://www.gnu.org/licenses/gpl-3.0.en.html",
+  "homepage": "https://github.com/David-Mulder/leather-editable-list/",
+  "ignore": [
+    "/.*",
+    "/test/"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.2.0",
+    "paper-icon-button": "PolymerElements/paper-icon-button#~1.0.5",
+    "paper-checkbox": "PolymerElements/paper-checkbox#~1.0.13"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "web-component-tester": "*",
+    "paper-input": "PolymerElements/paper-input#~1.0.18"
+  },
+  "_release": "4f2dc60f71",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "4f2dc60f71347442a2ef78bfe08dc38c302fcbb8"
+  },
+  "_source": "git://github.com/David-Mulder/leather-editable-list.git",
+  "_target": "master",
+  "_originalSource": "David-Mulder/leather-editable-list",
+  "_direct": true
+}
